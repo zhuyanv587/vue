@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片切换</title>
+    <link rel="stylesheet" href="/assets/css/img.css"
+</head>
+<body>
+    <div id="app">
+        <div class="center">
+            <!-- 图片 -->
+            <img :src="imgs[index]" alt="">
+            <!-- 左箭头 -->
+            <a href="JavaScript:void(0)" class="left" @click="prev" v-show="index!=0">
+                <img src="./img/prev.png" alt="">
+            </a>
+            <!-- 右箭头 -->
+            <a href="JavaScript:void(0)" class="right" @click="next" v-show="index<imgs.lenth-1">
+                <img src="./img/next.png" alt="">
+            </a>
+        </div>
+    </div>
+    <script type="text/javascript" src="../assets/js/vue.js"></script>
+    <script>
+        // 创建vue实例
+        var app = new Vue({
+            el: '#app',
+            data: {
+                imgs: [
+                    './img/10.jpg',
+                    './img/12.jpg',
+                    './img/13.jpg',
+                    './img/14.jpg',
+                    './img/15.jpg',
+                    './img/5.jpg',
+                ],
+                index:0
+            },
+            methods: {
+                prev(){
+                    this.index--;
+                },
+                next(){
+                    this.index++;
+                }
+            }
+        })
+    </script>
+</body>
+</html>

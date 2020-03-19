@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <p>{{message}}</p>
+        <input type="text" v-model="message">
+    </div>
+    <!-- 1. 引入vue.js，开发环境版本，包含了有帮助的命令行警告 -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        // 2. 创建vue实例，需要指定el和data属性
+        const app = new Vue({
+            // 指定vue监管的视图区域，只要id为app的div内部才会受vue的管理
+            el:'#app',
+            // 提供了vue中使用的数据
+            data: {
+                message: 'hello Vue.js!'
+            }
+        })
+        setTimeout(function(){
+            app.$data.message = 'bye world'
+        }, 2000)
+    </script>
+</body>
+</html>

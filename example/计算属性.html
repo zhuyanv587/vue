@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        姓：<input type="text" v-model = "firstName"><br>
+        名：<input type="text" v-model = "lastName"><br>
+        姓名1(单向)：<input type="text" placeholder="full name" v-model.lazy.trim="fullName1"><br>
+        姓名2(单向)：<input type="text" placeholder="full name" v-model.lazy.trim="fullName2"><br>
+        姓名3(双向)：<input type="text" placeholder="full name" v-model.lazy.trim="fullName3"><br>
+        姓名4(侦听)：<input type="text" placeholder="full name" v-model.lazy.trim="fullName4"><br>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                firstName: "张",
+                lastName: "晓燕",
+                fullName1: "张 晓燕",
+                fullName4: '张 晓燕'
+            },
+            computed: {
+                fullName2: function(){
+                    console.log("计算1次");
+                    return this.firstName + " " + this.lastName;
+                },
+                fullName3: {
+                    get: function(){
+                        console.log("计算1次");
+                        return this.firstName + " " + this.lastName;
+                    },
+                    set: function(){
+                        console.log(value);
+                        var arr = value.split(" ");
+                        this.firstName = arr[0];
+                        this.lastName = arr[1];
+                    }
+                }
+            },
+
+            watch: {
+                firstName: function(newVal,oldVal) {
+                    this.fullName4 = this.firstName + " " + this.lastName;
+                },
+            },
+        })
+        vm.$watch('lastName',function(value){
+            console.log('$watch lastName', value)
+            this.fullName4 = this.firstName + '-' + this.lastName;
+        })
+    </script>
+</body>
+</html>

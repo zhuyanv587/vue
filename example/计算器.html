@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <h1>简单计算器</h1>
+        <p>数值A:<input type="text" v-model="num1"></p>
+        <p>数值B:<input type="text" v-model="num2"></p>
+        <button @click="count">计算</button>
+        <p>计算结果:<span v-text="num3"></span></p>
+    </div>
+    <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                num3: 0
+            },
+            methods: {
+                count: function(){
+                    this.num3 = (this.num1-0) + (this.num2-0);
+                }
+            }
+        })
+    </script>
+</body>
+</html>
