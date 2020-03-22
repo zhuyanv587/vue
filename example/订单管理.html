@@ -5,20 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>订单管理</title>
     <link rel="stylesheet" type="text/css" href="/assets/css/buy.css">
+    <script type="text/javascript" src="../assets/js/vue.js"></script>
 </head>
 <body>
-    <div id="app">
+    <div id="app" @click="countAll">
         <div class="first">
             <div class="title"> &nbsp&nbsp 订单管理</div>
             <p class="brand">
-                品牌：<input type="text" class="font1">
-                <button class="search">查询</button>
+                品牌：<input type="text" class="font1" placeholder="输入要查找的设备名称" ref="search2">
+                <button class="btn-search" @click="search1">查询</button>
             </p>            
         </div>
         <hr class="bord1">
         <div class="second">
             <div class="left">
-                <form></form>
                 <table class="table" width=1030 border="2" bordercolor="#FFFAFA" cellspacing="0"> 
                     <thead>
                         <tr height=50>
@@ -30,83 +30,115 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr height=50>
-                            <td>&nbsp{{name}}</td>
-					        <td>&nbsp{{item.orderDate | dateFormat('yyy-MM-dd')}} </td>
-                            <td>&nbsp{{pice}}</td>
+                        <tr height=50 v-for="(iphone,index) in iphones">
+                            <td>{{iphone.brands}}</td>
+					        <td>{{iphone.date | yyyyMMdd}}</td>
+                            <td>{{iphone.prices}}</td>
                             <td>
-                                &nbsp
-                                <button class="plus">+</button> <span> {{num}} </span><button class="reduce">-</button>
+                                <button class="plus" @click="add(index)">+</button>
+                                <a v-text="iphone.numbers"></a>
+                                <button class="reduce" @click="sub(index)">-</button>
                             </td>
-					        <td>&nbsp<input class='delete' type="button" value="删除"></td>
+					        <td>
+                                <button class="delete" @click="del(index)">删除</button>
+                            </td>
                         </tr>
+                    </tr><br>
+                    </tr>
                     </tbody>
-                    <tfoot>
-                        <tr height=50>
-                            <td>
-                                订单总额：<span class="count" v-show="todos.length>0"><strong @click="add"> {{addnum}} </strong>元</span>
-                            </td>
-                            <td colspan="4"></td>
-                        </tr>
-                    </tfoot>             
                 </table>
+                <div class="all">订单总额：{{all}}元</div>
             </div>
             <div class="right">
                 <form class="form1">
-                    <span class="text1">新增订单</span>
+                    <span class="add">新增订单</span><br>
                     <hr class="bord2"><br>
                     <span class="text2">品牌</span><br>
-                    <input v-model="name" type="text" placeholder="&nbsp&nbsp如：笔记本，手机" class="text3"><br><br>
+                    <input v-model="iphone.brands" type="text" placeholder="如：笔记本，手机" class="text3"><br><br>
                     <span class="text2">价格</span><br>
-                    <input v-model="pice" type="text" placeholder="&nbsp&nbsp如：50" class="text3"><br><br>
+                    <input v-model="iphone.prices" type="text" placeholder="如：50" class="text3"><br><br>
                     <span class="text2">数量</span><br>
-                    <input v-model="num" type="text" placeholder="&nbsp&nbsp如：3" class="text3"><br><br>
-                    <button id="sub" class="submission" @click="submiss">提交</button>
+                    <input v-model="iphone.numbers" type="text" placeholder="如：3" class="text3"><br><br>
+                    <button class="submission" @click="submiss">提交</button>
                 </form>                
             </div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script>
-        // const app = new Vue({
-        //     el: '#app',
-        //     data: {
-        //         name: '',
-        //         pice: '',
-        //         num: ''
-        //     },
-        //     methods: {
-        //         submiss: function(){
-		// 			var tmp = "<tr><td>" + name + "</td>" +
-		// 				"<td>" + "&nbsp{{item.orderDate | dateFormat('yyy-MM-dd')}}" + "</td>" +
-        //                 "<td>" + pice + "</td>" +
-        //                 "<td>" + stunum + "</td>" +
-		// 				"<td>" + "<input class='del' type='button' value='删除'/>" + "</td>" +
-        //                 "</tr>";
-        //         }
-        //     }
-            
-        // })
-        Vue.filter("dataFormat",function(value,format){
-            let date = {
-                "M+": value.getMonth() + 1,
-                "d+": value.getDate(),
-                "h+": value.getHours(),
-                "m+": value.getMinutes(),
-                "s+": value.getSeconds(),
-            }
-            if(/(y+)/.test(format)){
-                format = format.replace(RegExp.$1,(value.getFullYear() + "").substr(4-RegExp.$1.length));
-                for(let k in date){
-                    if(new RegExp(`(${k})`).test(format)){
-                        format = format.replace(RegExp.$1,(RegExp.$1.length == 1)?
-                        (date[k]):(("00" + date[k]).substr(("" + date[k]).length)));
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                iphone: [{
+                    brands: '',
+                    date: '',
+                    prices: '',
+                    numbers: '',
+                }],
+                iphones: [],
+                cx_iphone: [],
+                search: '',
+                all: 0
+            },
+            methods: {
+                // 添加
+                submiss: function () {
+                    this.iphone.date = new Date();
+                    this.iphones.push(this.iphone);
+                    this.iphone = {};
+                },
+                del: function (index) {
+                    this.iphones.splice(index, 1);
+                },
+                add(index) {
+                    this.iphones[index].numbers++;
+                },
+                sub(index) {
+                    if (this.iphones[index].numbers > 0) {
+                        this.iphones[index].numbers--;
                     }
+                },
+                countAll() {
+                    let all = 0;
+                    for (let i in this.iphones) {
+                        let number = this.iphones[i].numbers;
+                        let money = this.iphones[i].prices;
+                        all += number * money;
+                    }
+                    this.all = all;
+                },
+                search1() {
+                    let brand = this.$refs.search2.value;
+                    this.cx_iphone = [];
+                    for (let i in this.iphone) {
+                        let n = this.iphone[i].brands;
+                        if (brand === n) {
+                            this.cx_iphone.push(this.iphone[i]);
+                        }
+                    }
+                    this.iphone = this.cx_iphone;
                 }
-                return format;
             }
         })
-        Vue.filter("yyyMMdd",function(date){
+        // Vue.filter("dataFormat",function(value,format){
+        //     let date = {
+        //         "M+": value.getMonth() + 1,
+        //         "d+": value.getDate(),
+        //         "h+": value.getHours(),
+        //         "m+": value.getMinutes(),
+        //         "s+": value.getSeconds(),
+        //     }
+        //     if(/(y+)/.test(format)){
+        //         format = format.replace(RegExp.$1,(value.getFullYear() + "").substr(4-RegExp.$1.length));
+        //         for(let k in date){
+        //             if(new RegExp(`(${k})`).test(format)){
+        //                 format = format.replace(RegExp.$1,(RegExp.$1.length == 1)?
+        //                 (date[k]):(("00" + date[k]).substr(("" + date[k]).length)));
+        //             }
+        //         }
+        //         return format;
+        //     }
+        // })
+        Vue.filter("yyyyMMdd",function(date){
             let dt = new Date(date);
             let y = dt.getFullYear();
             let m = (dt.getMonth() + 1).toString().padStart(2,'0');
