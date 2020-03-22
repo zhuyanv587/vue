@@ -8,11 +8,11 @@
     <script type="text/javascript" src="../assets/js/vue.js"></script>
 </head>
 <body>
-    <div id="app" @click="countAll">
+    <div id="app" @click="count">
         <div class="first">
             <div class="title"> &nbsp&nbsp 订单管理</div>
             <p class="brand">
-                品牌：<input type="text" class="font1" placeholder="输入要查找的设备名称" ref="search2">
+                品牌：<input type="text" class="font1" placeholder="输入要查找的设备名称" v-model="search2">
                 <button class="btn-search" @click="search1">查询</button>
             </p>            
         </div>
@@ -22,7 +22,7 @@
                 <table class="table" width=1030 border="2" bordercolor="#FFFAFA" cellspacing="0"> 
                     <thead>
                         <tr height=50>
-                            <td>品牌</td>
+                            <td class="brands">品牌</td>
                             <td>订单日期</td>
                             <td>订单价格</td>
                             <td>购买数量</td>
@@ -30,13 +30,13 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr height=50 v-for="(iphone,index) in iphones">
-                            <td>{{iphone.brands}}</td>
-					        <td>{{iphone.date | yyyyMMdd}}</td>
-                            <td>{{iphone.prices}}</td>
+                        <tr height=50 v-for="(order,index) in orders">
+                            <td>{{order.brands}}</td>
+					        <td>{{order.date | yyyyMMdd}}</td>
+                            <td>{{order.prices}}</td>
                             <td>
                                 <button class="plus" @click="add(index)">+</button>
-                                <a v-text="iphone.numbers"></a>
+                                <a v-text="order.numbers"></a>
                                 <button class="reduce" @click="sub(index)">-</button>
                             </td>
 					        <td>
@@ -50,17 +50,16 @@
                 <div class="all">订单总额：{{all}}元</div>
             </div>
             <div class="right">
-                <form class="form1">
-                    <span class="add">新增订单</span><br>
-                    <hr class="bord2"><br>
-                    <span class="text2">品牌</span><br>
-                    <input v-model="iphone.brands" type="text" placeholder="如：笔记本，手机" class="text3"><br><br>
-                    <span class="text2">价格</span><br>
-                    <input v-model="iphone.prices" type="text" placeholder="如：50" class="text3"><br><br>
-                    <span class="text2">数量</span><br>
-                    <input v-model="iphone.numbers" type="text" placeholder="如：3" class="text3"><br><br>
-                    <button class="submission" @click="submiss">提交</button>
-                </form>                
+                <br><br>
+                <span class="add">新增订单</span><br>
+                <hr class="bord2"><br>
+                <span class="text2">品牌</span><br>
+                <input v-model="order.brands" type="text" placeholder="如：笔记本，手机" class="text3"><br><br>
+                <span class="text2">价格</span><br>
+                <input v-model="order.prices" type="text" placeholder="如：50" class="text3"><br><br>
+                <span class="text2">数量</span><br>
+                <input v-model="order.numbers" type="text" placeholder="如：3" class="text3"><br><br>
+                <button class="submission" @click="submiss">提交</button>               
             </div>
         </div>
     </div>
@@ -68,54 +67,59 @@
         var vm = new Vue({
             el: '#app',
             data: {
-                iphone: [{
+                order: [{
                     brands: '',
                     date: '',
                     prices: '',
                     numbers: '',
                 }],
-                iphones: [],
-                cx_iphone: [],
-                search: '',
+                orders: [],
+                ip_order: [{
+                    brands: '',
+                    date: '',
+                    prices: '',
+                    numbers: '',
+                }],
+                search2: '',
                 all: 0
             },
             methods: {
                 // 添加
                 submiss: function () {
-                    this.iphone.date = new Date();
-                    this.iphones.push(this.iphone);
-                    this.iphone = {};
+                    this.order.date = new Date();
+                    this.orders.push(this.order);
+                    this.order = {};
                 },
                 del: function (index) {
-                    this.iphones.splice(index, 1);
+                    this.orders.splice(index, 1);
                 },
                 add(index) {
-                    this.iphones[index].numbers++;
+                    this.orders[index].numbers++;
                 },
                 sub(index) {
-                    if (this.iphones[index].numbers > 0) {
-                        this.iphones[index].numbers--;
+                    if (this.orders[index].numbers > 0) {
+                        this.orders[index].numbers--;
                     }
                 },
-                countAll() {
+                count() {
                     let all = 0;
-                    for (let i in this.iphones) {
-                        let number = this.iphones[i].numbers;
-                        let money = this.iphones[i].prices;
+                    for (let i in this.orders) {
+                        let number = this.orders[i].numbers;
+                        let money = this.orders[i].prices;
                         all += number * money;
                     }
                     this.all = all;
                 },
                 search1() {
-                    let brand = this.$refs.search2.value;
-                    this.cx_iphone = [];
-                    for (let i in this.iphone) {
-                        let n = this.iphone[i].brands;
+                    var brand = this.search2;
+                    this.ip_order = [];
+                    for (let i in this.orders) {
+                        var n = this.orders[i].brands;
                         if (brand === n) {
-                            this.cx_iphone.push(this.iphone[i]);
+                            this.ip_order.push(this.orders[i]);
                         }
                     }
-                    this.iphone = this.cx_iphone;
+                    this.orders = this.ip_order;
                 }
             }
         })
