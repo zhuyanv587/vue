@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script type="text/javascript" src="/assets/js/vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <a href="" @click.prevent="comName='login'">登录</a>
+        <a href="" @click.prevent="comName='register'">注册</a>
+        <br><br>
+        <component :is="comName"></component>
+    </div>
+    <template id="login">
+        <div>登录组件</div>
+    </template>
+    <template id="register">
+        <div>注册组件</div>
+    </template>
+    <script>
+        Vue.component('login', {
+            template: '#login'
+        })
+        Vue.component('register', {
+            template: '#register'
+        })
+        let app = new Vue({
+            el: '#app',
+            data: {
+                comName: 'login'
+            }
+        })
+    </script>
+</body>
+</html>

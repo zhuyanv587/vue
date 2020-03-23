@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script type="text/javascript" src="/assets/js/vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <parent></parent>
+    </div>
+     
+    <template id="child">
+        <h3>我是子组件</h3>
+    </template>
+
+    <template id="parent">
+        <div>
+            <h1>我是父组件</h1>
+            <child></child>
+            <child></child>
+        </div>
+    </template>
+    <script>
+        let Child = {
+            template: '#child',
+        }
+        let Parent = {
+            template: '#parent',
+            components: {
+                'child': Child
+            }
+        }
+        let vm = new Vue({
+            el: '#app',
+            components: {
+                'parent': Parent
+            }
+        })
+    </script>
+</body>
+</html>
