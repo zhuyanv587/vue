@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<script type="text/javascript" src="/assets/js/vue.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
+		<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.20.3/TweenMax.min.js"></script>
+		<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+
+		<style>
+			* {
+				outline: none !important;
+				/* 抗锯齿渲染 */
+				-webkit-font-smoothing: antialiased;
+				font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+			}			
+			#input-content{
+				width: 400px;
+				margin: 0 auto;
+				overflow: overlay;
+				display: block;
+				padding: 50px;
+				background-color: white;
+				box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+				-webkit-box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+				margin-top: 50px;
+				margin-bottom: 20px;	
+			}			
+			#table-content{
+				margin: 0 auto;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app">
+			<header-bar v-on:e-add-order="addOrder" v-on:e-delete-order="deleteOrder" :morders='morders'></header-bar>
+		</div>
+	</body>
+	<!-- 顶栏布局 -->
+	<template id="header-bar">
+		<el-tabs v-model="orderName" @tab-click="handleClick">
+			<el-tab-pane label="订单信息" name="first">
+				<div id="info-content">
+					<table-layout v-bind="$attrs" v-on='$listeners'></table-layout>
+				</div>
+			</el-tab-pane>
+			<el-tab-pane label="添加订单" name="second">
+				<div id="add-order-content">
+					<input-layout v-on='$listeners'>
+					</input-layout>
+				</div>
+			</el-tab-pane>
+		</el-tabs>
+	</template>
+	<!-- 文本输入区 -->
+	<template id="input-layout">
+		<div id="input-content">
+			<el-form ref="form" label-width="80px">
+				<el-form-item label="手机品牌">
+					<el-input v-model="form.name" size="medium" placeholder="如苹果,小米等"></el-input>
+				</el-form-item>
+				<el-form-item label="单个价格">
+					<el-input-number v-model="form.price" :min="1" label="价格"></el-input-number>
+				</el-form-item>
+				<el-form-item label="购买数量">
+					<el-input-number v-model="form.num" :min="1" label="数量"></el-input-number>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" @click="onSubmit">确认</el-button>
+					<el-button>取消</el-button>
+				</el-form-item>
+			</el-form>
+		</div>
+	</template>
+	<!-- 列表 -->
+	<template id="table-layout">
+		<div id="table-content">
+			<el-table border :data="orders">
+				<el-table-column prop="time" label="日期" width="150">
+				</el-table-column>
+				<el-table-column prop="brand" label="品牌" width="120">
+				</el-table-column>
+				<el-table-column prop="price" label="价格" width="120">
+				</el-table-column>
+				<el-table-column prop="num" label="数量">
+				</el-table-column>
+				<el-table-column label="操作" width="100">
+					<template slot-scope="scope">
+						<el-button @click="handleClick(scope.$index)" type="text">编辑</el-button>
+						<el-button type="text" @click="deleteClick(scope.$index)">删除</el-button>
+					</template>
+				</el-table-column>
+			</el-table>
+			<!-- 编辑Dialog -->
+			<el-dialog title="信息编辑" :visible.sync="dialogFormVisible">
+				<el-form :model="selectOrder">
+					<el-form-item label="商品名称">
+						<el-input v-model="selectOrder.brand"></el-input>
+					</el-form-item>
+					<el-form-item label="价格">
+						<el-input-number v-model="selectOrder.price" :min="1" label="价格"></el-input-number>
+					</el-form-item>
+					<el-form-item label="数量">
+						<el-input-number v-model="selectOrder.num" :min="1" label="数量"></el-input-number>
+					</el-form-item>
+				</el-form>
+				<div slot="footer" class="dialog-footer">
+					<el-button @click="dialogFormVisible = false">取 消</el-button>
+					<el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+				</div>
+			</el-dialog>
+		</div>
+	</template>
+	<script>
+		//数据录入
+		const inputLayout = {
+			data() {
+				return {
+					form: {
+						name: '',
+						price: 2000,
+						num: 20
+					}
+				}
+			},
+			template: '#input-layout',
+			methods: {
+				onSubmit() {
+					console.log('submit!');
+					let date = new Date();
+					Y = date.getFullYear() + '-';
+					M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+					D = date.getDate() + ' ';
+					h = date.getHours() + ':';
+					m = date.getMinutes() + ':';
+					s = date.getSeconds();
+					let nowTime = Y + M + D + h + m + s
+					if (this.form.num > 0 && this.form.price > 0 && this.form.name != undefined && this.form.name != '' && this.form.name !=
+						null) {
+						let order = {
+							brand: this.form.name,
+							time: nowTime,
+							price: this.form.price,
+							num: this.form.num
+						}
+						this.$emit('e-add-order', order);
+					} else {
+						this.$notify({
+							title: '警告',
+							message: '数据非法',
+							type: 'warning'
+						});
+					}
+				}
+			}
+		}
+		//列表信息
+		const tableLayout = {
+			inheritAttrs: false,
+			data() {
+				return {
+					// 容器
+					orders: [],
+					//选择操作的对象的索引
+					selectIndex: 0,
+					dialogFormVisible: false,
+					selectOrder: {}
+				}
+			},
+			mounted: function() {
+				console.log(this.$attrs);
+				this.orders = [].concat(this.$attrs.morders);
+			},
+			props: ['order'],
+			methods: {
+				handleClick(row) {
+					//点击编辑
+					console.log(row);
+					this.dialogFormVisible = true;
+					this.selectIndex = row;
+				},
+				deleteClick: function(index) {
+					this.orders.splice(index, 1);
+					this.$emit('e-delete-order', index);
+				}
+			},
+			template: '#table-layout',
+			watch: {
+				$attrs: function() {
+					this.orders = [].concat(this.$attrs.morders);
+				},
+				selectIndex: function() {
+					console.log(this.orders[this.selectIndex]);
+					this.selectOrder = this.orders[this.selectIndex];
+					console.log(this.selectOrder);
+				}
+			},
+			filters: {
+				formatTime: function(timestamp) {
+					//格式化时间戳
+					var date = new Date(timestamp);
+					Y = date.getFullYear() + '-';
+					M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+					D = date.getDate() + ' ';
+					h = date.getHours() + ':';
+					m = date.getMinutes() + ':';
+					s = date.getSeconds();
+					return Y + M + D + h + m + s;
+				}
+			}
+		}
+		//顶栏
+		const headerBar = {
+			data() {
+				return {
+					orderName: 'second'
+				};
+			},
+			mounted: function() {
+				console.log(this.$attrs);
+			},
+			methods: {
+				handleClick(tab, event) {
+					console.log(this.activeName);
+					console.log(tab, event);
+				}
+			},
+			template: '#header-bar',
+			components: {
+				'input-layout': inputLayout,
+				'table-layout': tableLayout
+			}
+		};
+		new Vue({
+			el: '#app',
+			data: {
+				// 商品容器
+				morders: [],
+			},
+			components: {
+				'header-bar': headerBar,
+				'input-layout': inputLayout
+			},
+			methods: {
+				addOrder: function(order) {
+					console.log("添加成功");
+					this.morders.push(order);
+					console.log(this.morders);
+
+					this.$notify({
+						title: '成功',
+						message: '数据添加成功',
+						type: 'success'
+					});
+				},
+				deleteOrder: function(index) {
+					this.morders.splice(index, 1)
+					this.$message('删除成功!');
+				}
+			}
+		})
+	</script>
+</html>
