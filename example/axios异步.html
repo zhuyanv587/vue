@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        axios.interceptors.request.use(function(config){
+            console.log(config);
+            config.headers.mytoken = 'aqedns4ii2nglght';
+            return config;
+        },function(err){
+            console.log(err);
+        })
+        axios.get('http://localhost:8000/adata')
+        .then(data => {
+            console.log(data);
+        })
+        axios.interceptors.response.use(function(res){
+            console.log(res);
+            return res.data;
+        },function(err){
+            console.log(err);
+        })
+        axios.get('http://localhost:8000/adata')
+        .then(data => {
+            console.log(data);
+        })
+        axios.defaults.baseURL = 'http://localhost:8000';
+        axios.get('adata').then(ret => {
+            console.log(ret.data);
+        })
+        async function queryData(){
+            let ret = await axios.get('adata');
+            return ret;
+        }
+        queryData().then(data => {
+            console.log(data);
+        })
+        async function queryData(){
+            let info = await axios.get('async1');
+            let ret = await axios.get('async2?info=' + info.data);
+            return ret.data;
+        }
+        queryData().then(data => {
+            console.log(data);
+        })
+    </script>
+</body>
+</html>
